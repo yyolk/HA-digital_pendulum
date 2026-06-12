@@ -62,7 +62,7 @@ def _create_player(hass, player_entity_id: str, player_type: str):
         return GooglePlayer(hass, player_entity_id)
     elif player_type == "alexa":
         return AlexaPlayer(hass, player_entity_id)
-    return AlexaPlayer(hass, player_entity_id)
+    return GooglePlayer(hass, player_entity_id)
 
 
 class DigitalPendulum:

@@ -1,23 +1,45 @@
+import logging
+import voluptuous as vol
 from .player_base import BasePlayer
 
-class GooglePlayer(BasePlayer):
+_LOGGER = logging.getLogger(__name__)
 
+
+class GooglePlayer(BasePlayer):
     async def play_default_chime(self):
         pass
 
     async def play_chime(self, chime_url: str):
+        base_data = {
+            "entity_id": self.player,
+            "media_content_id": chime_url,
+            "media_content_type": "audio/mp3",
+        }
         try:
+            # Alcuni media_player (es. Google Cast/Sonos) supportano "announce"
+            # per non interrompere la riproduzione in corso. Non tutte le
+            # integrazioni (es. Apple TV/HomePod) lo accettano: in quel caso
+            # voluptuous solleva MultipleInvalid e ripieghiamo senza il flag.
             await self.hass.services.async_call(
                 "media_player",
                 "play_media",
-                {
-                    "entity_id": self.player,
-                    "media_content_id": chime_url,
-                    "media_content_type": "audio/mp3",
-                    "announce": True,          # ← ripristina lo stato precedente
-                },
+                {**base_data, "announce": True},
                 blocking=True,
             )
+        except vol.Invalid:
+            _LOGGER.debug(
+                "Digital Pendulum: 'announce' non supportato da '%s', ritento senza",
+                self.player,
+            )
+            try:
+                await self.hass.services.async_call(
+                    "media_player",
+                    "play_media",
+                    base_data,
+                    blocking=True,
+                )
+            except Exception:
+                await self.play_default_chime()
         except Exception:
             await self.play_default_chime()
 
@@ -38,18 +60,30 @@ class GooglePlayer(BasePlayer):
         """Annuncio vocale nella lingua specificata."""
         tts_entity = self._find_tts_entity()
         if tts_entity:
-            await self.hass.services.async_call(
-                "tts",
-                "speak",
-                {
-                    "entity_id": tts_entity,
-                    "media_player_entity_id": self.player,
-                    "message": text,
-                    "language": language,
-                    "announce": True, #<--ripristina lo stato precedente
-                },
-                blocking=False,
-            )
+            base_data = {
+                "entity_id": tts_entity,
+                "media_player_entity_id": self.player,
+                "message": text,
+                "language": language,
+            }
+            try:
+                await self.hass.services.async_call(
+                    "tts",
+                    "speak",
+                    {**base_data, "announce": True},
+                    blocking=False,
+                )
+            except vol.Invalid:
+                _LOGGER.debug(
+                    "Digital Pendulum: 'announce' non supportato da '%s', ritento senza",
+                    self.player,
+                )
+                await self.hass.services.async_call(
+                    "tts",
+                    "speak",
+                    base_data,
+                    blocking=False,
+                )
         else:
             await self.hass.services.async_call(
                 "tts",

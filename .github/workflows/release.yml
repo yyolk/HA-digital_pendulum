@@ -1,18 +1,24 @@
 name: Build Release Asset
-
 on:
   release:
     types: [published]
-permissions:      
-  contents: write  
+permissions:
+  contents: write
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+      - name: Update manifest version
+        run: |
+          jq --arg version "${{ github.event.release.tag_name }}" \
+             '.version = ($version | ltrimstr("v"))' \
+             custom_components/digital_pendulum/manifest.json > tmp.json
+          mv tmp.json custom_components/digital_pendulum/manifest.json
       - name: Create ZIP
         run: zip -r digital_pendulum.zip . -x "*.git*"
       - name: Upload asset
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ github.event.release.tag_name }}
           files: digital_pendulum.zip

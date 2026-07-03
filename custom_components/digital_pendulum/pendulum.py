@@ -103,6 +103,11 @@ class DigitalPendulum:
         lang = self.hass.config.language or "en"
         return lang[:2].lower()
 
+    def _tts_language(self) -> str:
+        if self.language in ("cloud_default", "cloud_en_us"):
+            return self.language
+        return self._normalize_language()
+
     def _to_12h_with_period(self, hour: int):
         hour12 = hour % 12
         if hour12 == 0:
@@ -391,7 +396,7 @@ class DigitalPendulum:
             if self.voice_announcement:
                 if minute == 30 and not self.announce_half_hours_voice:
                     return
-                await self._player.speak(text, self._normalize_language())
+                await self._player.speak(text, self._tts_language())
         except Exception as e:
             _LOGGER.error(
                 "Digital Pendulum: errore durante l'annuncio su '%s': %s",

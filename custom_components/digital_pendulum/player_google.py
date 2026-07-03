@@ -65,7 +65,7 @@ class GooglePlayer(BasePlayer):
             return state.entity_id
         return None
 
-    async def speak(self, text: str, language: str = "en"):
+    async def speak(self, text: str, language: str = DEFAULT_TTS_LANGUAGE):
         """Annuncio vocale nella lingua specificata."""
         tts_entity = self._find_tts_entity()
         service_language = self._tts_language_for_service(tts_entity, language)

@@ -6,6 +6,14 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class GooglePlayer(BasePlayer):
+    def _tts_language_for_service(self, tts_entity: str | None, language: str):
+        is_cloud_tts = tts_entity == "tts.home_assistant_cloud"
+        if language == "cloud_default":
+            return None if is_cloud_tts else "en"
+        if language == "cloud_en_us":
+            return "en-US" if is_cloud_tts else "en"
+        return language
+
     async def play_default_chime(self):
         pass
 
@@ -59,13 +67,15 @@ class GooglePlayer(BasePlayer):
     async def speak(self, text: str, language: str = "en"):
         """Annuncio vocale nella lingua specificata."""
         tts_entity = self._find_tts_entity()
+        service_language = self._tts_language_for_service(tts_entity, language)
         if tts_entity:
             base_data = {
                 "entity_id": tts_entity,
                 "media_player_entity_id": self.player,
                 "message": text,
-                "language": language,
             }
+            if service_language:
+                base_data["language"] = service_language
             try:
                 await self.hass.services.async_call(
                     "tts",
@@ -91,7 +101,7 @@ class GooglePlayer(BasePlayer):
                 {
                     "entity_id": self.player,
                     "message": text,
-                    "language": language,
+                    "language": service_language or "en",
                 },
                 blocking=False,
             )

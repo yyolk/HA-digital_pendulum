@@ -96,7 +96,9 @@ class DigitalPendulum:
         self._load_config()
 
     def _normalize_language(self) -> str:
-        if self.language and self.language != "auto":
+        if self.language == "cloud_en_us":
+            return "en"
+        if self.language and self.language not in ("auto", "cloud_default"):
             return self.language
         lang = self.hass.config.language or "en"
         return lang[:2].lower()

@@ -6,10 +6,10 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class GooglePlayer(BasePlayer):
-    def _tts_language_for_service(self, tts_entity: str | None, language: str):
+    def _tts_language_for_service(self, tts_entity: str | None, language: str) -> str | None:
         is_cloud_tts = tts_entity == "tts.home_assistant_cloud"
         if language == "cloud_default":
-            return None if is_cloud_tts else "en"
+            return None
         if language == "cloud_en_us":
             return "en-US" if is_cloud_tts else "en"
         return language

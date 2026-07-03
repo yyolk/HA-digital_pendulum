@@ -38,7 +38,7 @@ PLAYER_TYPES = {
 }
 LANGUAGES = {
     "auto": "Automatic (same as Home Assistant)",
-    "cloud_default": "Cloud TTS default (no language override)",
+    "cloud_default": "Cloud TTS default (omit language parameter)",
     "cloud_en_us": "Cloud TTS English (en-US)",
     "en": "English",
     "it": "Italiano",

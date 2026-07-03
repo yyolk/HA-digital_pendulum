@@ -3,15 +3,16 @@ import voluptuous as vol
 from .player_base import BasePlayer
 
 _LOGGER = logging.getLogger(__name__)
+DEFAULT_TTS_LANGUAGE = "en"
 
 
 class GooglePlayer(BasePlayer):
     def _tts_language_for_service(self, tts_entity: str | None, language: str) -> str | None:
         is_cloud_tts = tts_entity == "tts.home_assistant_cloud"
         if language == "cloud_default":
-            return None
+            return None if is_cloud_tts else DEFAULT_TTS_LANGUAGE
         if language == "cloud_en_us":
-            return "en-US" if is_cloud_tts else "en"
+            return "en-US" if is_cloud_tts else DEFAULT_TTS_LANGUAGE
         return language
 
     async def play_default_chime(self):
@@ -101,7 +102,7 @@ class GooglePlayer(BasePlayer):
                 {
                     "entity_id": self.player,
                     "message": text,
-                    "language": service_language or "en",
+                    "language": service_language or DEFAULT_TTS_LANGUAGE,
                 },
                 blocking=False,
             )

@@ -23,7 +23,7 @@
           "announce_quarter_hours": "Play chime at quarter hours"
         },
         "data_description": {
-          "player_type": "Select your device type (Alexa, Google Home, or Generic)",
+          "player_type": "Select your device type (Alexa, Google Home, Generic, or Generic + Nabu Casa Cloud TTS)",
           "language": "Select the language for time announcements. 'Automatic' uses the Home Assistant language setting",
           "custom_chime_path": "E.g.: www/sounds/bell.mp3 (Formats: MP3, WAV, OGG - leave empty for default)",
           "announce_half_hours_voice": "If disabled, the chime will still play at half hours but no voice announcement will be made",
@@ -58,7 +58,7 @@
           "announce_quarter_hours": "Play chime at quarter hours"
         },
         "data_description": {
-          "player_type": "Select your device type (Alexa, Google Home, or Generic)",
+          "player_type": "Select your device type (Alexa, Google Home, Generic, or Generic + Nabu Casa Cloud TTS)",
           "language": "Select the language for time announcements. 'Automatic' uses the Home Assistant language setting",
           "custom_chime_path": "E.g.: www/sounds/bell.mp3 (Formats: MP3, WAV, OGG - leave empty for default)",
           "announce_half_hours_voice": "If disabled, the chime will still play at half hours but no voice announcement will be made",

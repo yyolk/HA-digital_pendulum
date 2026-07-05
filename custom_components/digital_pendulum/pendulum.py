@@ -60,6 +60,8 @@ DE_NEXT_HOUR_NAMES = {
 def _create_player(hass, player_entity_id: str, player_type: str):
     if player_type == "google":
         return GooglePlayer(hass, player_entity_id)
+    if player_type == "generic_cloud":
+        return GooglePlayer(hass, player_entity_id, cloud_tts_mode=True)
     elif player_type == "alexa":
         return AlexaPlayer(hass, player_entity_id)
     return GooglePlayer(hass, player_entity_id)
@@ -89,23 +91,29 @@ class DigitalPendulum:
         self.use_half_hour_chime = config.get(CONF_USE_HALF_HOUR_CHIME, DEFAULT_USE_HALF_HOUR_CHIME)
         self.announce_quarter_hours = config.get(CONF_ANNOUNCE_QUARTER_HOURS, DEFAULT_ANNOUNCE_QUARTER_HOURS)
         self.language = config.get(CONF_LANGUAGE, DEFAULT_LANGUAGE)
-        player_type = config.get(CONF_PLAYER_TYPE, "alexa")
-        self._player = _create_player(self.hass, self.player, player_type)
+        self.player_type = config.get(CONF_PLAYER_TYPE, "alexa")
+        if self.language == "cloud_default":
+            self.language = "auto"
+            if self.player_type in ("google", "generic"):
+                self.player_type = "generic_cloud"
+        elif self.language == "cloud_en_us":
+            self.language = "en"
+            if self.player_type in ("google", "generic"):
+                self.player_type = "generic_cloud"
+        self._player = _create_player(self.hass, self.player, self.player_type)
 
     def update_config(self):
         self._load_config()
 
     def _normalize_language(self) -> str:
-        if self.language == "cloud_en_us":
-            return "en"
-        if self.language and self.language not in ("auto", "cloud_default"):
+        if self.language and self.language != "auto":
             return self.language
         lang = self.hass.config.language or "en"
         return lang[:2].lower()
 
     def _tts_language(self) -> str:
-        if self.language in ("cloud_default", "cloud_en_us"):
-            return self.language
+        if self.player_type == "generic_cloud" and self.language == "auto":
+            return "auto"
         return self._normalize_language()
 
     def _to_12h_with_period(self, hour: int):

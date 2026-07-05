@@ -7,12 +7,19 @@ DEFAULT_TTS_LANGUAGE = "en"
 
 
 class GooglePlayer(BasePlayer):
+    def __init__(self, hass, player_entity_id, cloud_tts_mode: bool = False):
+        super().__init__(hass, player_entity_id)
+        self.cloud_tts_mode = cloud_tts_mode
+
     def _tts_language_for_service(self, tts_entity: str | None, language: str) -> str | None:
         is_cloud_tts = tts_entity == "tts.home_assistant_cloud"
-        if language == "cloud_default":
-            return None if is_cloud_tts else DEFAULT_TTS_LANGUAGE
-        if language == "cloud_en_us":
-            return "en-US" if is_cloud_tts else DEFAULT_TTS_LANGUAGE
+        if language == "auto":
+            if is_cloud_tts and self.cloud_tts_mode:
+                return None
+            hass_lang = self.hass.config.language or DEFAULT_TTS_LANGUAGE
+            return hass_lang[:2].lower()
+        if language == "en" and is_cloud_tts and self.cloud_tts_mode:
+            return "en-US"
         return language
 
     async def play_default_chime(self):

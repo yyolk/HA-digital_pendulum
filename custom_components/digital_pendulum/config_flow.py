@@ -201,6 +201,16 @@ class DigitalPendulumOptionsFlow(config_entries.OptionsFlow):
         if user_input is not None:
             return self.async_create_entry(title="", data=user_input)
         current_options = self.entry.options or self.entry.data
+        current_player_type = current_options.get(CONF_PLAYER_TYPE, "alexa")
+        current_language = current_options.get(CONF_LANGUAGE, DEFAULT_LANGUAGE)
+        if current_language == "cloud_default":
+            current_language = "auto"
+            if current_player_type in ("google", "generic"):
+                current_player_type = "generic_cloud"
+        elif current_language == "cloud_en_us":
+            current_language = "en"
+            if current_player_type in ("google", "generic"):
+                current_player_type = "generic_cloud"
         chime_options = [
             selector.SelectOptionDict(value=key, label=info["name"])
             for key, info in PRESET_CHIMES.items()
@@ -218,7 +228,7 @@ class DigitalPendulumOptionsFlow(config_entries.OptionsFlow):
                 # 0) Tipo di player
                 vol.Required(
                     CONF_PLAYER_TYPE,
-                    default=current_options.get(CONF_PLAYER_TYPE, "alexa"),
+                    default=current_player_type,
                 ): selector.SelectSelector(
                     selector.SelectSelectorConfig(
                         options=player_type_options,
@@ -263,7 +273,7 @@ class DigitalPendulumOptionsFlow(config_entries.OptionsFlow):
                 # 4) Lingua
                 vol.Required(
                     CONF_LANGUAGE,
-                    default=current_options.get(CONF_LANGUAGE, DEFAULT_LANGUAGE),
+                    default=current_language,
                 ): selector.SelectSelector(
                     selector.SelectSelectorConfig(
                         options=language_options,

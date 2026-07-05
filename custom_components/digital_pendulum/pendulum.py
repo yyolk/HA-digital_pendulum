@@ -60,7 +60,7 @@ DE_NEXT_HOUR_NAMES = {
 def _create_player(hass, player_entity_id: str, player_type: str):
     if player_type == "google":
         return GooglePlayer(hass, player_entity_id)
-    if player_type == "generic_cloud":
+    elif player_type == "generic_cloud":
         return GooglePlayer(hass, player_entity_id, cloud_tts_mode=True)
     elif player_type == "alexa":
         return AlexaPlayer(hass, player_entity_id)

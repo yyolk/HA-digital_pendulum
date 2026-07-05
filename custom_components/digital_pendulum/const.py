@@ -35,7 +35,6 @@ PLAYER_TYPES = {
     "alexa": "Alexa (alexa_media_player)",
     "google": "Google Home / Assistant",
     "generic": "Generic (media_player)",
-    "generic_cloud": "Generic (media_player + Nabu Casa Cloud TTS)",
 }
 LANGUAGES = {
     "auto": "Automatic (same as Home Assistant)",

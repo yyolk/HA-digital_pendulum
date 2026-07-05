@@ -60,8 +60,6 @@ DE_NEXT_HOUR_NAMES = {
 def _create_player(hass, player_entity_id: str, player_type: str):
     if player_type == "google":
         return GooglePlayer(hass, player_entity_id)
-    elif player_type == "generic_cloud":
-        return GooglePlayer(hass, player_entity_id, cloud_tts_mode=True)
     elif player_type == "alexa":
         return AlexaPlayer(hass, player_entity_id)
     return GooglePlayer(hass, player_entity_id)
@@ -104,8 +102,6 @@ class DigitalPendulum:
         return lang[:2].lower()
 
     def _tts_language(self) -> str:
-        if self.player_type == "generic_cloud" and self.language == "auto":
-            return "auto"
         return self._normalize_language()
 
     def _to_12h_with_period(self, hour: int):

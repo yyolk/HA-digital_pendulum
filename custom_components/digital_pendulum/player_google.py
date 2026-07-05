@@ -18,9 +18,6 @@ CLOUD_TTS_LANGUAGE_MAP = {
 
 
 class GooglePlayer(BasePlayer):
-    def __init__(self, hass, player_entity_id):
-        super().__init__(hass, player_entity_id)
-
     def _tts_language_for_service(self, tts_entity: str | None, language: str) -> str | None:
         is_cloud_tts = tts_entity == "tts.home_assistant_cloud"
         if language == "auto":

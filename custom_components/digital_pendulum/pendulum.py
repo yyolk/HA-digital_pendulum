@@ -101,8 +101,8 @@ class DigitalPendulum:
         lang = self.hass.config.language or "en"
         return lang[:2].lower()
 
-def _tts_language(self) -> str:
-    return self.language or DEFAULT_LANGUAGE
+    def _tts_language(self) -> str:
+        return self.language or DEFAULT_LANGUAGE
 
     def _to_12h_with_period(self, hour: int):
         hour12 = hour % 12

@@ -119,7 +119,7 @@ class GooglePlayer(BasePlayer):
                 {
                     "entity_id": self.player,
                     "message": text,
-                    "language": service_language or DEFAULT_TTS_LANGUAGE,
+                    "language": service_language,
                 },
                 blocking=False,
             )

@@ -4,6 +4,17 @@ from .player_base import BasePlayer
 
 _LOGGER = logging.getLogger(__name__)
 DEFAULT_TTS_LANGUAGE = "en"
+CLOUD_TTS_LANGUAGE_MAP = {
+    "en": "en-US",
+    "it": "it-IT",
+    "de": "de-DE",
+    "es": "es-ES",
+    "fr": "fr-FR",
+    "pt": "pt-PT",
+    "pl": "pl-PL",
+    "cs": "cs-CZ",
+    "sk": "sk-SK",
+}
 
 
 class GooglePlayer(BasePlayer):
@@ -18,8 +29,8 @@ class GooglePlayer(BasePlayer):
                 return None
             hass_lang = self.hass.config.language or DEFAULT_TTS_LANGUAGE
             return hass_lang[:2].lower()
-        if language == "en" and is_cloud_tts and self.cloud_tts_mode:
-            return "en-US"
+        if is_cloud_tts and self.cloud_tts_mode:
+            return CLOUD_TTS_LANGUAGE_MAP.get(language, language)
         return language
 
     async def play_default_chime(self):

@@ -92,14 +92,6 @@ class DigitalPendulum:
         self.announce_quarter_hours = config.get(CONF_ANNOUNCE_QUARTER_HOURS, DEFAULT_ANNOUNCE_QUARTER_HOURS)
         self.language = config.get(CONF_LANGUAGE, DEFAULT_LANGUAGE)
         self.player_type = config.get(CONF_PLAYER_TYPE, "alexa")
-        if self.language == "cloud_default":
-            self.language = "auto"
-            if self.player_type in ("google", "generic"):
-                self.player_type = "generic_cloud"
-        elif self.language == "cloud_en_us":
-            self.language = "en"
-            if self.player_type in ("google", "generic"):
-                self.player_type = "generic_cloud"
         self._player = _create_player(self.hass, self.player, self.player_type)
 
     def update_config(self):

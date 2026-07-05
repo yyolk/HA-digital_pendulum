@@ -203,14 +203,6 @@ class DigitalPendulumOptionsFlow(config_entries.OptionsFlow):
         current_options = self.entry.options or self.entry.data
         current_player_type = current_options.get(CONF_PLAYER_TYPE, "alexa")
         current_language = current_options.get(CONF_LANGUAGE, DEFAULT_LANGUAGE)
-        if current_language == "cloud_default":
-            current_language = "auto"
-            if current_player_type in ("google", "generic"):
-                current_player_type = "generic_cloud"
-        elif current_language == "cloud_en_us":
-            current_language = "en"
-            if current_player_type in ("google", "generic"):
-                current_player_type = "generic_cloud"
         chime_options = [
             selector.SelectOptionDict(value=key, label=info["name"])
             for key, info in PRESET_CHIMES.items()

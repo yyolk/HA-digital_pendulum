@@ -4,8 +4,29 @@ from .player_base import BasePlayer
 
 _LOGGER = logging.getLogger(__name__)
 
+TTS_LOCALE_MAP = {
+    "en": "en-US",
+    "it": "it-IT",
+    "de": "de-DE",
+    "fr": "fr-FR",
+    "es": "es-ES",
+    "pt": "pt-PT",
+    "pl": "pl-PL",
+    "cs": "cs-CZ",
+    "sk": "sk-SK",
+}
+
+
+def _to_tts_locale(language: str) -> str:
+    if not language:
+        return "en-US"
+    if "-" in language:
+        return language
+    return TTS_LOCALE_MAP.get(language.lower(), "en-US")
+
 
 class GooglePlayer(BasePlayer):
+
     async def play_default_chime(self):
         pass
 
@@ -64,25 +85,24 @@ class GooglePlayer(BasePlayer):
                 "entity_id": tts_entity,
                 "media_player_entity_id": self.player,
                 "message": text,
-                "language": language,
+                "language": _to_tts_locale(language),
             }
             try:
-                await self.hass.services.async_call(
-                    "tts",
-                    "speak",
-                    {**base_data, "announce": True},
-                    blocking=False,
-                )
-            except vol.Invalid:
-                _LOGGER.debug(
-                    "Digital Pendulum: 'announce' non supportato da '%s', ritento senza",
-                    self.player,
-                )
+                # blocking=True è necessario perché il fallback/except
+                # abbia senso: con blocking=False l'errore emerge nel
+                # core di HA dopo che questo except è già terminato.
                 await self.hass.services.async_call(
                     "tts",
                     "speak",
                     base_data,
-                    blocking=False,
+                    blocking=True,
+                )
+            except Exception as e:
+                _LOGGER.error(
+                    "Digital Pendulum: errore TTS su '%s' con entity '%s': %s",
+                    self.player,
+                    tts_entity,
+                    e,
                 )
         else:
             await self.hass.services.async_call(
@@ -91,7 +111,7 @@ class GooglePlayer(BasePlayer):
                 {
                     "entity_id": self.player,
                     "message": text,
-                    "language": language,
+                    "language": _to_tts_locale(language),
                 },
                 blocking=False,
             )
